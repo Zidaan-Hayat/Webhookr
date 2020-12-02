@@ -1,0 +1,5 @@
+discord
+requests
+simple_term_menu
+colorama
+termcolor

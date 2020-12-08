@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
+
 import os, datetime, simple_term_menu
-from discord import Embed, Webhook, RequestsWebhookAdapter
+from discord import Embed, Webhook, RequestsWebhookAdapter, Color
 from discord.embeds import EmbedProxy, EmptyEmbed
 from termcolor import colored as clr
 from colorama import Fore
+
+_clear = lambda: os.system("clear")
 
 
 def _ask_q_opts(options, selector: str = "=> ", title: str = None):
@@ -57,15 +60,6 @@ def _print_err(msg: str):
     print(fmt_err)
 
 
-# Unecessary atm
-#
-# def _print_wrn(msg: str):
-#     fmt_wrn = f"{Fore.YELLOW}[{Fore.YELLOW}!{Fore.YELLOW}]{Fore.RED} " + clr(
-#         msg, "yellow", attrs=["bold"]
-#     )
-#     print(fmt_wrn)
-
-
 def _print_scc(msg: str):
     fmt_scc = f"{Fore.GREEN}[{Fore.YELLOW}✓{Fore.GREEN}]{Fore.RESET} " + clr(
         msg, "green", attrs=["bold"]
@@ -89,13 +83,22 @@ class WebhookConstructor:
 
     def construct_hook(self):
         ask = _ask_q_inp("Webhook URL")
+        valid = False
 
-        if (
-            ask.startswith("https://discord.com/api/webhooks")
-            or ask.startswith("https://canary.discord.com/api/webhooks") != True
-        ):
+        valid_hook_domains = (
+            "https://discord.com/api/webhooks",
+            "https://canary.discord.com/api/webhooks",
+        )
+
+        for valid_hook in valid_hook_domains:
+            if ask.lower().startswith(valid_hook):
+                valid = True
+                break
+
+        if not valid:
             _print_err(
-                "Invalid URL. Must be an extension of https://discord.com/api/webhooks"
+                "Invalid URL. Must be an extension of one of the following: "
+                + ", ".join(clr(hook, "green", attrs=[]) for hook in valid_hook_domains)
             )
             return None
 
@@ -131,11 +134,24 @@ class EmbedConstructor:
             return False
 
         elif attr == "color":
-            ask = _ask_q_inp("Color (integer)")
+            r = _ask_q_inp("Color (r)")
+            g = _ask_q_inp("Color (g)")
+            b = _ask_q_inp("Color (b)")
 
-            if not ask.isnumeric():
-                _print_err("Color isn't a number")
-                return False
+            for c in (r, g, b):
+                if not c.isalnum():
+                    _print_err(f"{c} isn't a number")
+                    return False
+
+                if int(c) not in range(0, 256):
+                    _print_err(f"{c} is not a number between 0 and 255")
+                    return False
+
+            r = int(r)
+            g = int(g)
+            b = int(b)
+
+            setattr(self._embed, attr, Color.from_rgb(r, g, b))
 
         else:
 
@@ -268,7 +284,7 @@ class EmbedConstructor:
         }
 
         while True:
-            os.system("clear")
+            _clear()
             self._show_emb()
             run = _ask_q_opts(opts, title="Options")
 
@@ -316,6 +332,7 @@ class Main:
         run = EmbedConstructor().start()
 
         if run:
+            _clear()
             self.embeds.append(run)
             _print_scc("Embed added!")
 
@@ -373,8 +390,9 @@ class Main:
 
 
 if __name__ == "__main__":
+    _clear()
     try:
         Main().main()
     except KeyboardInterrupt:
-        os.system("clear")
+        _clear()
         _print_err("Closing.")

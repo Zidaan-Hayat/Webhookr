@@ -3,15 +3,43 @@
 import os, datetime, simple_term_menu
 from discord import Embed, Webhook, RequestsWebhookAdapter, Color
 from discord.embeds import EmbedProxy, EmptyEmbed
-from termcolor import colored as clr
-from colorama import Fore
+
+import colorful as cf
+
+__version__ = "1.1.0"
+__author__ = "Zidaan Hayat"
+__email__ = "doczidaan@gmail.com"
+
+cf.update_palette(
+    {
+        "coolyellow": "#ffc15e",
+        "scaryred": "#ff0000",
+        "slowblue": "#2a9d8f",
+        "successgreen": "#419D78",
+        "clearsnow": "#fcf7f8",
+        "mysteriousmagenta": "#6f3eaf",
+    }
+)
 
 _clear = lambda: os.system("clear")
 
 
+def clr(text: str, color: str, bold: bool = False):
+    color = getattr(cf, color)
+
+    return f"{cf.bold if bold else ''}{color}{text}{cf.reset}"
+
+
+def _colored_bracket(inner_char: str, out_color: str, in_color: str):
+    clr_out = getattr(cf, out_color)
+    clr_inn = getattr(cf, in_color)
+
+    return f"{clr_out}[{clr_inn}{inner_char}{clr_out}]{cf.reset}"
+
+
 def _ask_q_opts(options, selector: str = "=> ", title: str = None):
     return simple_term_menu.TerminalMenu(
-        options, clr(title, "red", attrs=["bold"]), menu_cursor=selector
+        options, clr(title, "coolyellow", True), menu_cursor=selector
     ).show()
 
 
@@ -20,16 +48,18 @@ def _ask_q_inp(q, can_skip: bool = False):
 
     if can_skip:
         ask = input(
-            f"{Fore.BLUE}[{Fore.WHITE}?{Fore.BLUE}]{Fore.RESET} "
-            + clr(q + " ", "red")
+            _colored_bracket("?", "slowblue", "clearsnow")
+            + " "
+            + clr(q + " ", "coolyellow")
             + clr("(Press enter to skip)", "cyan")
-            + clr("?: ", "magenta", attrs=["bold"])
+            + clr("?: ", "mysteriousmagenta", True)
         )
     else:
         ask = input(
-            f"{Fore.BLUE}[{Fore.WHITE}?{Fore.BLUE}]{Fore.RESET} "
-            + clr(q + " ", "red")
-            + clr("?: ", "magenta", attrs=["bold"])
+            _colored_bracket("?", "slowblue", "clearsnow")
+            + " "
+            + clr(q + " ", "coolyellow")
+            + clr("?: ", "mysteriousmagenta", True)
         )
 
     if not ask or (ask.replace(" ", "") == ""):
@@ -40,7 +70,7 @@ def _ask_q_inp(q, can_skip: bool = False):
 
 def _ask_q_bool(q):
     ask = input(
-        f"{Fore.BLUE}[{Fore.WHITE}?{Fore.BLUE}]{Fore.RESET} {q} ({Fore.GREEN}y[yes]{Fore.RESET}/{Fore.RED}n[no]{Fore.RESET})?: "
+        f"{_colored_bracket('?', 'slowblue', 'clearsnow')} {q} ({cf.successgreen}y[yes]{cf.reset}/{cf.scaryred}n[no]{cf.reset})?: "
     )
 
     if ask in ["y", "yes"]:
@@ -54,15 +84,15 @@ def _ask_q_bool(q):
 
 
 def _print_err(msg: str):
-    fmt_err = f"{Fore.YELLOW}[{Fore.RED}✗{Fore.YELLOW}]{Fore.RESET} " + clr(
-        msg, "red", attrs=["bold"]
+    fmt_err = _colored_bracket("✗", "coolyellow", "scaryred") + clr(
+        f" {msg}", "scaryred", True
     )
     print(fmt_err)
 
 
 def _print_scc(msg: str):
-    fmt_scc = f"{Fore.GREEN}[{Fore.YELLOW}✓{Fore.GREEN}]{Fore.RESET} " + clr(
-        msg, "green", attrs=["bold"]
+    fmt_scc = _colored_bracket("✓", "coolyellow", "successgreen") + clr(
+        msg, "successgreen", True
     )
     print(fmt_scc)
 
@@ -90,6 +120,15 @@ class WebhookConstructor:
             "https://canary.discord.com/api/webhooks",
         )
 
+        if not ask:
+            _print_err(
+                "Invalid URL. Must be an extension of one of the following: "
+                + ", ".join(
+                    clr(hook, "successgreen", False) for hook in valid_hook_domains
+                )
+            )
+            return None
+
         for valid_hook in valid_hook_domains:
             if ask.lower().startswith(valid_hook):
                 valid = True
@@ -98,7 +137,9 @@ class WebhookConstructor:
         if not valid:
             _print_err(
                 "Invalid URL. Must be an extension of one of the following: "
-                + ", ".join(clr(hook, "green", attrs=[]) for hook in valid_hook_domains)
+                + ", ".join(
+                    clr(hook, "successgreen", True) for hook in valid_hook_domains
+                )
             )
             return None
 
@@ -193,6 +234,7 @@ class EmbedConstructor:
             url.startswith("https://") and icon_url.startswith("https://")
         ):
             _print_err("Url and Icon URL must be valid URLs")
+            return False
 
         if not url:
             url = EmptyEmbed
@@ -201,6 +243,34 @@ class EmbedConstructor:
             icon_url = EmptyEmbed
 
         self._embed.set_author(name=name, url=url, icon_url=icon_url)
+        return True
+
+    def _add_thumbnail(self):
+        thumb_url = _ask_q_inp("URL")
+
+        if not thumb_url:
+            _print_err("URL is required")
+            return False
+
+        if thumb_url and not thumb_url.startswith("https://"):
+            _print_err("Thumb URL must be a valid URL")
+            return False
+
+        self._embed.set_thumbnail(url=thumb_url)
+        return True
+
+    def _add_image(self):
+        img_url = _ask_q_inp("URL")
+
+        if not img_url:
+            _print_err("Image URL is required")
+            return False
+
+        if img_url and not img_url.startswith("https://"):
+            _print_err("Image URL must be a valid URL")
+            return False
+
+        self._embed.set_image(url=img_url)
         return True
 
     def _add_footer(self):
@@ -229,25 +299,27 @@ class EmbedConstructor:
             "fields",
             "footer",
             "author",
+            "thumbnail",
+            "image",
         )
 
-        m = """[ EMBED ]"""
+        m = clr("[ EMBED ]", "coolyellow", True)
 
         for attr in show_attrs:
             m += "\n" + clr(
                 (attr[0].upper() + "".join(attr[1:])) + ": " + attr.upper(),
                 "white",
-                attrs=["bold"],
+                True,
             )
 
         for attr in show_attrs:
             val = getattr(self._embed, attr, None)
 
             if not val:
-                m = m.replace(attr.upper(), clr("Not set", "red"))
+                m = m.replace(attr.upper(), clr("Not set", "coolyellow"))
 
             elif isinstance(val, (list, tuple, set)):
-                m = m.replace(attr.upper(), clr(str(len(val)), "green"))
+                m = m.replace(attr.upper(), clr(str(len(val)), "successgreen"))
 
             elif isinstance(val, EmbedProxy):
                 newline = "\n"
@@ -257,7 +329,7 @@ class EmbedConstructor:
                     + str(
                         newline.join(
                             [
-                                clr(f"\t{k} -> {v}", "green")
+                                clr(f"\t{k} -> {v}", "successgreen")
                                 for k, v in list(val.__dict__.items())
                             ]
                         )
@@ -265,7 +337,7 @@ class EmbedConstructor:
                 )
 
             else:
-                m = m.replace(attr.upper(), clr(str(val), "green"))
+                m = m.replace(attr.upper(), clr(str(val), "successgreen"))
 
         print(m)
 
@@ -276,6 +348,8 @@ class EmbedConstructor:
             "Color": self._add_attr,
             "URL": self._add_attr,
             "Timestamp": self._add_attr,
+            "Set Thumbnail": self._add_thumbnail,
+            "Set Image": self._add_image,
             "Add Author": self._add_author,
             "Add Footer": self._add_footer,
             "Add Field": self._add_field,
@@ -286,6 +360,7 @@ class EmbedConstructor:
         while True:
             _clear()
             self._show_emb()
+            print()
             run = _ask_q_opts(opts, title="Options")
 
             if list(opts)[run] == list(opts)[-1]:
@@ -305,7 +380,7 @@ class EmbedConstructor:
 
 class ContentConstructor:
     def start(self):
-        ask = input(clr("Message content", "red") + clr("?: ", "magenta"))
+        ask = _ask_q_inp(clr("Message content", "coolyellow"))
 
         if ask.replace(" ", "") != "":
             return ask

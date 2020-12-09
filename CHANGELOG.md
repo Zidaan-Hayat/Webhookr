@@ -1,6 +1,14 @@
 # Webhooker Changelog
 
-## 1.2.0
+## 1.1.1
+
+### Added
+
+- A printed title
+- A license
+- Assets for gifs in the readme
+
+## 1.1.0
 
 ### Added
 

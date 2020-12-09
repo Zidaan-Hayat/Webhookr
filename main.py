@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+"""
+I promise soon I will put comments 
+in my code so it is easier for 
+you to understand
+"""
+
 import os, datetime, simple_term_menu
 from discord import Embed, Webhook, RequestsWebhookAdapter, Color
 from discord.embeds import EmbedProxy, EmptyEmbed
@@ -339,7 +345,7 @@ class EmbedConstructor:
             else:
                 m = m.replace(attr.upper(), clr(str(val), "successgreen"))
 
-        print(m + '\n')
+        print(m + "\n")
 
     def start(self):
         opts = {
@@ -463,16 +469,18 @@ class Main:
             if "send" in list(main_opts)[run].lower():
                 break
 
+
 def _print_title():
-    title = r'''
+    title = r"""
  __     __     ______     ______     __  __     ______     ______     __  __     ______     _______
 /\ \  _ \ \   /\  ___\   /\  == \   /\ \_\ \   /\  __ \   /\  __ \   /\ \/ /    /\  == \   |==   []|
 \ \ \/ ".\ \  \ \  __\   \ \  __<   \ \  __ \  \ \ \/\ \  \ \ \/\ \  \ \  _"-.  \ \  __<   |  ==== |
  \ \__/".~\_\  \ \_____\  \ \_____\  \ \_\ \_\  \ \_____\  \ \_____\  \ \_\ \_\  \ \_\ \_\ '-------' 
   \/_/   \/_/   \/_____/   \/_____/   \/_/\/_/   \/_____/   \/_____/   \/_/\/_/   \/_/ /_/                                                                                
 
-'''
-    print(clr(title, 'coolyellow', True))
+"""
+    print(clr(title, "coolyellow", True))
+
 
 if __name__ == "__main__":
     _clear()

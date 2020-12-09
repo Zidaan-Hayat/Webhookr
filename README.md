@@ -19,11 +19,11 @@ git clone https://github.com/Zidaan-Hayat/Webhookr.git
 # Go into the repository
 cd Webhookr
 
-# Install the requirements
+# Install all the required modules
 python3 -m pip install -r requirements.txt
 
 # Run the file
-python3 __main__.py
+python3 main.py
 ```
 
 # Usage

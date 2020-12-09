@@ -23,7 +23,7 @@ cd Webhookr
 python3 -m pip install -r requirements.txt
 
 # Run the file
-python3 __main__.py
+python3 main.py
 ```
 
 # Usage

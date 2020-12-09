@@ -1,6 +1,12 @@
-# [Webhook](https://discord.com/developers/docs/resources/webhook)er
+<h1><a href="https://discord.com/developers/docs/resources/webhook">Webhook</a>r</h1>
 
-A simple (and terribly written) friendly terminal interface to send webhooks over [discord](https://discord.com), piggybacking on the [discord.py](https://github.com/Rapptz/discord.py) webhook support.
+<p align=center>
+
+<img src="Assets/mail.gif">
+
+</p>
+
+A simple (and terribly written) friendly terminal interface to send webhooks over [discord](https://discord.com), piggybacking on the [discord.py](https://github.com/Rapptz/discord.py) webhook support. Currently on version `1.1.1`
 
 # Setup
 
@@ -8,10 +14,10 @@ This setup guide assumes you have at least [python3](https://python.org) install
 
 ```sh
 # Clone the repository
-git clone https://github.com/Zidaan-Hayat/Webhooker.git
+git clone https://github.com/Zidaan-Hayat/Webhookr.git
 
 # Go into the repository
-cd Webhooker
+cd Webhookr
 
 # Install the requirements
 python3 -m pip install -r requirements.txt
@@ -25,6 +31,8 @@ python3 __main__.py
 Once you run the file, you get a simple up and down selection tool which can be found [here](https://pypi.org/project/simple-term-menu/) [or here](https://github.com/IngoMeyer441/simple-term-menu) and is a very useful tool, simply use the `UP`, `DOWN` keys or the `j`, `k` keys to navigate.
 
 If at any time you want to cancel a process, there should be a `Cancel` or `Stop` option. Otherwise you can enter `CTRL+C`
+
+<img src="Assets/menu.gif">
 
 # Disclaimer
 

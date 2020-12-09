@@ -6,7 +6,7 @@ from discord.embeds import EmbedProxy, EmptyEmbed
 
 import colorful as cf
 
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 __author__ = "Zidaan Hayat"
 __email__ = "doczidaan@gmail.com"
 
@@ -303,7 +303,7 @@ class EmbedConstructor:
             "image",
         )
 
-        m = clr("[ EMBED ]", "coolyellow", True)
+        m = clr("\n[ EMBED ]", "coolyellow", True)
 
         for attr in show_attrs:
             m += "\n" + clr(
@@ -339,7 +339,7 @@ class EmbedConstructor:
             else:
                 m = m.replace(attr.upper(), clr(str(val), "successgreen"))
 
-        print(m)
+        print(m + '\n')
 
     def start(self):
         opts = {
@@ -360,7 +360,6 @@ class EmbedConstructor:
         while True:
             _clear()
             self._show_emb()
-            print()
             run = _ask_q_opts(opts, title="Options")
 
             if list(opts)[run] == list(opts)[-1]:
@@ -453,6 +452,7 @@ class Main:
         }
 
         while True:
+            _clear()
             run = _ask_q_opts(main_opts, title="Webhook Options")
 
             call_func = main_opts[list(main_opts)[run]]()
@@ -463,10 +463,21 @@ class Main:
             if "send" in list(main_opts)[run].lower():
                 break
 
+def _print_title():
+    title = r'''
+ __     __     ______     ______     __  __     ______     ______     __  __     ______     _______
+/\ \  _ \ \   /\  ___\   /\  == \   /\ \_\ \   /\  __ \   /\  __ \   /\ \/ /    /\  == \   |==   []|
+\ \ \/ ".\ \  \ \  __\   \ \  __<   \ \  __ \  \ \ \/\ \  \ \ \/\ \  \ \  _"-.  \ \  __<   |  ==== |
+ \ \__/".~\_\  \ \_____\  \ \_____\  \ \_\ \_\  \ \_____\  \ \_____\  \ \_\ \_\  \ \_\ \_\ '-------' 
+  \/_/   \/_/   \/_____/   \/_____/   \/_/\/_/   \/_____/   \/_____/   \/_/\/_/   \/_/ /_/                                                                                
+
+'''
+    print(clr(title, 'coolyellow', True))
 
 if __name__ == "__main__":
     _clear()
     try:
+        _print_title()
         Main().main()
     except KeyboardInterrupt:
         _clear()
